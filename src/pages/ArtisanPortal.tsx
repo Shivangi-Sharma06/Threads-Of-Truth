@@ -6,13 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Wallet, Camera, MapPin, Clock, Upload, CheckCircle, AlertCircle } from "lucide-react";
+import { Wallet, Camera, MapPin, Clock, Upload, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 
 const ArtisanPortal = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [wallet, setWallet] = useState("");
+  const [wallet, setWallet] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     productName: "",
     productType: "",
@@ -25,12 +25,24 @@ const ArtisanPortal = () => {
   const [submissionResult, setSubmissionResult] = useState<any>(null);
 
   const connectWallet = async () => {
-    // Simulate MetaMask connection
-    setTimeout(() => {
-      setIsConnected(true);
-      setWallet("0x742d35Cc6775C06aA6A7e3cB8DfF0000000000");
-      toast.success("Wallet connected successfully!");
-    }, 1000);
+    if ((window as any).ethereum) {
+      try {
+        const accounts = await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
+        setWallet(accounts[0]);
+        setIsConnected(true);
+        toast.success("Wallet connected successfully!");
+      } catch (error) {
+        toast.error("User rejected the request or there was an error.");
+      }
+    } else {
+      toast.error("MetaMask is not installed. Please install it to use this feature.");
+    }
+  };
+
+  const disconnectWallet = () => {
+    setWallet(null);
+    setIsConnected(false);
+    toast("Wallet disconnected.");
   };
 
   const getCurrentLocation = () => {
@@ -127,9 +139,14 @@ const ArtisanPortal = () => {
                       <p className="text-sm text-muted-foreground font-mono">{wallet}</p>
                     </div>
                   </div>
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                    Verified Artisan
-                  </Badge>
+                  <div className="flex items-center space-x-2">
+                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                      Verified Artisan
+                    </Badge>
+                    <Button variant="outline" size="sm" onClick={disconnectWallet}>
+                      Disconnect
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
 
