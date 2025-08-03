@@ -99,7 +99,7 @@ const ArtisanPortal = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [wallet, setWallet] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    productName: "",
+    productID: "",
     productType: "",
     technique: "",
     description: "",
@@ -219,8 +219,14 @@ const ArtisanPortal = () => {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="productName">Product Name</Label>
-                        <Input id="productName" value={formData.productName} onChange={(e) => setFormData(prev => ({ ...prev, productName: e.target.value }))} required />
+                        <Label htmlFor="productID">Product ID</Label>
+                        <Input
+                          id="productID"
+                          value={formData.productID}
+                          onChange={(e) => setFormData(prev => ({ ...prev, productID: e.target.value }))}
+                          required
+                          placeholder="Enter product ID"
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="productType">Product Type</Label>
@@ -249,17 +255,35 @@ const ArtisanPortal = () => {
 
                     <div className="space-y-2">
                       <Label htmlFor="technique">Weaving Technique</Label>
-                      <Input id="technique" value={formData.technique} onChange={(e) => setFormData(prev => ({ ...prev, technique: e.target.value }))} required />
+                      <Input
+                        id="technique"
+                        value={formData.technique}
+                        onChange={(e) => setFormData(prev => ({ ...prev, technique: e.target.value }))}
+                        required
+                        placeholder="Enter weaving technique"
+                      />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="description">Product Description</Label>
-                      <Textarea id="description" value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} required />
+                      <Textarea
+                        id="description"
+                        value={formData.description}
+                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        required
+                        placeholder="Enter product description"
+                      />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="materials">Materials Used</Label>
-                      <Input id="materials" value={formData.materials} onChange={(e) => setFormData(prev => ({ ...prev, materials: e.target.value }))} required />
+                      <Input
+                        id="materials"
+                        value={formData.materials}
+                        onChange={(e) => setFormData(prev => ({ ...prev, materials: e.target.value }))}
+                        required
+                        placeholder="Enter materials used"
+                      />
                     </div>
 
                     <div className="space-y-2">
@@ -297,7 +321,15 @@ const ArtisanPortal = () => {
                     <div className="space-y-2">
                       <Label htmlFor="location">Location</Label>
                       <div className="flex space-x-2">
-                        <Input id="location" value={formData.location} onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))} required />
+                        <Input
+                          id="location"
+                          value={formData.location}
+                          onChange={() => {}} // Disable manual typing
+                          required
+                          readOnly
+                          className="cursor-not-allowed font-mono text-green-700 bg-transparent"
+                          placeholder="Click the pin to capture location"
+                        />
                         <Button type="button" variant="outline" onClick={getCurrentLocation}>
                           <MapPin className="w-4 h-4" />
                         </Button>
@@ -361,4 +393,4 @@ const ArtisanPortal = () => {
   );
 };
 
-export default ArtisanPortal;
+export default ArtisanPortal
