@@ -94,10 +94,13 @@ const CameraCapture = ({
   );
 };
 
+const existingProductIDs = ["PROD001", "PROD002", "PROD003"]; // Example product IDs
+
 const ArtisanPortal = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [wallet, setWallet] = useState<string | null>(null);
+  const [role, setRole] = useState<string>("");
   const [formData, setFormData] = useState({
     productID: "",
     productType: "",
@@ -217,7 +220,43 @@ const ArtisanPortal = () => {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
+                    {/* Wallet Address Dropdown */}
+                    <div className="space-y-2">
+                      <Label htmlFor="wallet">Select the Wallet Address</Label>
+                      <Select
+                        value={wallet || ""}
+                        onValueChange={(value) => setWallet(value)}
+                        disabled={!wallet}
+                      >
+                        <SelectTrigger className="font-mono text-blue-700 bg-transparent cursor-not-allowed">
+                          <SelectValue placeholder="Connect MetaMask to autofill wallet address" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {wallet && <SelectItem value={wallet}>{wallet}</SelectItem>}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Role Dropdown */}
+                    <div className="space-y-2">
+                      <Label htmlFor="role">Select Your Role</Label>
+                      <Select value={role} onValueChange={setRole} required>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose your role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="fiber_producer">Fiber Producer</SelectItem>
+                          <SelectItem value="spinner">Spinner</SelectItem>
+                          <SelectItem value="dyer">Dyer</SelectItem>
+                          <SelectItem value="weaver">Weaver</SelectItem>
+                          <SelectItem value="tailor">Tailor</SelectItem>
+                          <SelectItem value="packager">Packager</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Product ID: Weaver can enter, others select */}
+                    {role === "weaver" ? (
                       <div className="space-y-2">
                         <Label htmlFor="productID">Product ID</Label>
                         <Input
@@ -228,29 +267,48 @@ const ArtisanPortal = () => {
                           placeholder="Enter product ID"
                         />
                       </div>
+                    ) : role ? (
                       <div className="space-y-2">
-                        <Label htmlFor="productType">Product Type</Label>
-                        <Select onValueChange={(value) => setFormData(prev => ({ ...prev, productType: value }))}>
+                        <Label htmlFor="productID">Product ID</Label>
+                        <Select
+                          value={formData.productID}
+                          onValueChange={(value) => setFormData(prev => ({ ...prev, productID: value }))}
+                          required
+                        >
                           <SelectTrigger>
-                            <SelectValue placeholder="Select product type" />
+                            <SelectValue placeholder="Select product ID" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="saree">Saree</SelectItem>
-                            <SelectItem value="dupatta">Dupatta</SelectItem>
-                            <SelectItem value="fabric">Fabric</SelectItem>
-                            <SelectItem value="shawl">Shawl</SelectItem>
-                            <SelectItem value="hankerchief">Hankerchief</SelectItem>
-                            <SelectItem value="bedsheet">Bedsheet</SelectItem>
-                            <SelectItem value="curtain">Curtain</SelectItem>
-                            <SelectItem value="tablecloth">Tablecloth</SelectItem>
-                            <SelectItem value="cushion_cover">Cushion Cover</SelectItem>
-                            <SelectItem value="kurta">Kurta</SelectItem>
-                            <SelectItem value="carpet">Carpet</SelectItem>
-                            <SelectItem value="dhoti">Dhoti</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
+                            {existingProductIDs.map((id) => (
+                              <SelectItem key={id} value={id}>{id}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>
+                    ) : null}
+
+                    <div className="space-y-2">
+                      <Label htmlFor="productType">Product Type</Label>
+                      <Select onValueChange={(value) => setFormData(prev => ({ ...prev, productType: value }))}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select product type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="saree">Saree</SelectItem>
+                          <SelectItem value="dupatta">Dupatta</SelectItem>
+                          <SelectItem value="fabric">Fabric</SelectItem>
+                          <SelectItem value="shawl">Shawl</SelectItem>
+                          <SelectItem value="hankerchief">Hankerchief</SelectItem>
+                          <SelectItem value="bedsheet">Bedsheet</SelectItem>
+                          <SelectItem value="curtain">Curtain</SelectItem>
+                          <SelectItem value="tablecloth">Tablecloth</SelectItem>
+                          <SelectItem value="cushion_cover">Cushion Cover</SelectItem>
+                          <SelectItem value="kurta">Kurta</SelectItem>
+                          <SelectItem value="carpet">Carpet</SelectItem>
+                          <SelectItem value="dhoti">Dhoti</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="space-y-2">
@@ -393,4 +451,4 @@ const ArtisanPortal = () => {
   );
 };
 
-export default ArtisanPortal
+export default ArtisanPortal;
