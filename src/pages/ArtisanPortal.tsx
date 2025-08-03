@@ -52,9 +52,8 @@ const CameraCapture = ({
     if (ctx) {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       const imageData = canvas.toDataURL("image/png");
-      if (stream) stream.getTracks().forEach(track => track.stop());
+      // Don't close the camera after capture, allow multiple captures
       onCapture(imageData);
-      onClose();
       toast.success("Photo captured!");
     }
   };
@@ -86,9 +85,10 @@ const CameraCapture = ({
             className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
             onClick={handleCancel}
           >
-            Cancel
+            Done
           </button>
         </div>
+        <div className="text-xs text-gray-500">Click "Done" when finished capturing all images.</div>
       </div>
     </div>
   );
