@@ -47,7 +47,7 @@ const Landing = () => {
             <div className="space-y-8">
               <div className="space-y-4">
                 <div className="inline-block px-4 py-2 bg-primary/10 border border-primary/20 rounded-full">
-                  <span className="text-primary font-medium">Built for Handloom Hackathon 2025</span>
+                  <span className="text-primary font-medium">Crafted to Preserve India's Handloom Legacy</span>
                 </div>
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
                   Authenticating{" "}
