@@ -5,15 +5,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Shield, CheckCircle, AlertCircle, MapPin, Clock, User, Hash } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
-const VerifyProduct = () => {
+export const VerifyProduct = () => {
   const [productHash, setProductHash] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationResult, setVerificationResult] = useState<any>(null);
+  const [feedback, setFeedback] = useState("");
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
   const handleVerify = async () => {
     setIsVerifying(true);
-    
+
     // Simulate API call
     setTimeout(() => {
       if (productHash.toLowerCase().includes("valid")) {
@@ -41,6 +44,12 @@ const VerifyProduct = () => {
       }
       setIsVerifying(false);
     }, 2000);
+  };
+
+  const handleFeedbackSubmit = () => {
+    setFeedbackSubmitted(true);
+    setFeedback("");
+    // You can add logic here to send feedback to your backend or API
   };
 
   return (
@@ -80,8 +89,8 @@ const VerifyProduct = () => {
                   Try entering "valid123" to see a successful verification
                 </p>
               </div>
-              
-              <Button 
+
+              <Button
                 onClick={handleVerify}
                 disabled={!productHash || isVerifying}
                 className="w-full"
@@ -211,6 +220,33 @@ const VerifyProduct = () => {
                         {verificationResult.proofHash}
                       </code>
                     </div>
+
+                    {/* Feedback Section */}
+                    <div className="space-y-2 mt-4">
+                      <Label htmlFor="feedback">Customer Feedback</Label>
+                      <Textarea
+                        id="feedback"
+                        placeholder="Share your feedback about this product or verification experience..."
+                        rows={3}
+                        className="bg-background/50"
+                        value={feedback}
+                        onChange={e => setFeedback(e.target.value)}
+                        disabled={feedbackSubmitted}
+                      />
+                      <Button
+                        className="mt-2"
+                        type="button"
+                        disabled={!feedback || feedbackSubmitted}
+                        onClick={handleFeedbackSubmit}
+                      >
+                        {feedbackSubmitted ? "Feedback Submitted" : "Submit Feedback"}
+                      </Button>
+                      {feedbackSubmitted && (
+                        <div className="text-green-600 text-sm mt-1">
+                          Thank you for your feedback!
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-8">
@@ -227,5 +263,3 @@ const VerifyProduct = () => {
     </div>
   );
 };
-
-export default VerifyProduct;
