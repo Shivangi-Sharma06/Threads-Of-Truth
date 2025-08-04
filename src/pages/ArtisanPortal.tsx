@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Wallet, Camera, MapPin, Clock, Upload, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
+import Credits from "./Credits"; // Adjust path if needed
 
 // CameraCapture component for multiple images
 const CameraCapture = ({
@@ -255,8 +256,8 @@ const ArtisanPortal = () => {
                       </Select>
                     </div>
 
-                    {/* Product ID: Weaver can enter, others select */}
-                    {role === "weaver" ? (
+                    {/* Product ID input for all roles */}
+                    {role && (
                       <div className="space-y-2">
                         <Label htmlFor="productID">Product ID</Label>
                         <Input
@@ -267,25 +268,7 @@ const ArtisanPortal = () => {
                           placeholder="Enter product ID"
                         />
                       </div>
-                    ) : role ? (
-                      <div className="space-y-2">
-                        <Label htmlFor="productID">Product ID</Label>
-                        <Select
-                          value={formData.productID}
-                          onValueChange={(value) => setFormData(prev => ({ ...prev, productID: value }))}
-                          required
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select product ID" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {existingProductIDs.map((id) => (
-                              <SelectItem key={id} value={id}>{id}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    ) : null}
+                    )}
 
                     <div className="space-y-2">
                       <Label htmlFor="productType">Product Type</Label>
@@ -340,113 +323,92 @@ const ArtisanPortal = () => {
                         value={formData.materials}
                         onChange={(e) => setFormData(prev => ({ ...prev, materials: e.target.value }))}
                         required
-                        placeholder="Enter materials used"
+                        placeholder="List materials"
                       />
                     </div>
 
+                    {/* Image capture */}
                     <div className="space-y-2">
                       <Label>Product Images</Label>
-                      <div className="border-2 border-dashed border-primary/30 rounded-lg p-6 text-center">
-                        <Camera className="w-12 h-12 text-primary mx-auto mb-4" />
-                        <p className="text-muted-foreground mb-4">Only live photos are allowed. You can capture multiple product images.</p>
-                        <Button type="button" variant="outline" onClick={() => setShowCamera(true)}>
-                          <Upload className="w-4 h-4 mr-2" /> Capture Live Photo
-                        </Button>
-                        {showCamera && (
-                          <CameraCapture
-                            onCapture={(imageDataUrl) => {
-                              setFormData(prev => ({
-                                ...prev,
-                                images: [...prev.images, imageDataUrl]
-                              }));
-                            }}
-                            onClose={() => setShowCamera(false)}
-                          />
-                        )}
-                        <div className="flex flex-wrap gap-4 mt-4 justify-center">
-                          {formData.images.map((img, idx) => (
+                      <div className="flex space-x-2 flex-wrap">
+                        {formData.images.length > 0 &&
+                          formData.images.map((img, idx) => (
                             <img
                               key={idx}
                               src={img}
-                              alt={`Captured ${idx + 1}`}
-                              className="w-32 h-32 object-cover rounded border border-green-400"
+                              alt={`Product Image ${idx + 1}`}
+                              className="w-20 h-20 object-cover rounded border border-gray-300"
                             />
                           ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="location">Location</Label>
-                      <div className="flex space-x-2">
-                        <Input
-                          id="location"
-                          value={formData.location}
-                          onChange={() => {}} // Disable manual typing
-                          required
-                          readOnly
-                          className="cursor-not-allowed font-mono text-green-700 bg-transparent"
-                          placeholder="Click the pin to capture location"
-                        />
-                        <Button type="button" variant="outline" onClick={getCurrentLocation}>
-                          <MapPin className="w-4 h-4" />
+                        <Button
+                          onClick={() => setShowCamera(true)}
+                          variant="outline"
+                          className="flex items-center space-x-2"
+                          type="button"
+                        >
+                          <Camera className="w-5 h-5" />
+                          <span>Add Photo</span>
                         </Button>
                       </div>
                     </div>
 
-                    <Button type="submit" disabled={isSubmitting} className="w-full" size="lg">
-                      {isSubmitting ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" /> Submitting to Oracle...
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle className="w-5 h-5 mr-2" /> Submit for Verification
-                        </>
-                      )}
+                    {/* Location input with auto fill */}
+                    <div className="space-y-2">
+                      <Label htmlFor="location">Location (Latitude, Longitude)</Label>
+                      <Input
+                        id="location"
+                        value={formData.location}
+                        onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                        placeholder="Enter location or click the location icon"
+                      />
+                      <Button
+                        variant="ghost"
+                        className="mt-1"
+                        onClick={getCurrentLocation}
+                        type="button"
+                      >
+                        <MapPin className="w-5 h-5" />
+                        <span className="sr-only">Get Current Location</span>
+                      </Button>
+                    </div>
+
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting ? "Submitting..." : "Submit Metadata"}
                     </Button>
                   </form>
                 </CardContent>
               </Card>
 
+              {/* Show submission result */}
               {submissionResult && (
-                <Card className="bg-gradient-card border-primary/20">
+                <Card className="bg-gradient-card border-primary/20 mb-8">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <CheckCircle className="w-5 h-5 mr-2 text-green-500" /> Product Submitted Successfully
-                    </CardTitle>
+                    <CardTitle>Submission Successful</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Product ID:</span>
-                        <span className="font-mono">{submissionResult.productId}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Timestamp:</span>
-                        <span className="text-sm">{new Date(submissionResult.timestamp).toLocaleString()}</span>
-                      </div>
-                    </div>
-                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <Clock className="w-4 h-4 text-primary" />
-                        <span className="font-medium">Oracle Verification Status</span>
-                        <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Verified</Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Your product metadata has been verified by Chainlink Functions and stored on-chain:
-                      </p>
-                      <code className="block bg-background/50 p-2 rounded text-xs font-mono">
-                        {submissionResult.proofHash}
-                      </code>
-                    </div>
+                  <CardContent className="space-y-2 font-mono">
+                    <p><strong>Product ID:</strong> {submissionResult.productId}</p>
+                    <p><strong>Proof Hash:</strong> {submissionResult.proofHash}</p>
+                    <p><strong>Timestamp:</strong> {new Date(submissionResult.timestamp).toLocaleString()}</p>
+                    <p><strong>Oracle Verified:</strong> {submissionResult.oracleVerified ? "Yes" : "No"}</p>
                   </CardContent>
                 </Card>
               )}
+
+              <Credits productId={submissionResult?.productId} />
             </>
           )}
         </div>
       </div>
+
+      {/* Camera capture modal */}
+      {showCamera && (
+        <CameraCapture
+          onCapture={(imageDataUrl) =>
+            setFormData(prev => ({ ...prev, images: [...prev.images, imageDataUrl] }))
+          }
+          onClose={() => setShowCamera(false)}
+        />
+      )}
     </div>
   );
 };
